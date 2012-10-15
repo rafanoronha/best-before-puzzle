@@ -1,20 +1,19 @@
 -module(best_before).
 -compile(export_all).
 
-parse_string(S) ->
-  parse_bin(list_to_binary(S)).
-
-parse_bin(<<A:2/binary, "/", B:2/binary, "/", Year:4/binary>>) ->
-  [YearNum, ANum, BNum] = lists:map(fun bin_to_int/1, [Year,A,B]),
-  Date = parse_date(YearNum, [ANum, BNum]),
-  case Date of
+s(S) when is_list(S) ->
+  case bin_to_date(list_to_binary(S)) of
     { error, _ } ->
       nok;
-    _ValidDate   ->
+    Date ->
       format_date(Date)
-  end;
-parse_bin(_) ->
-  nok.
+  end.
+
+bin_to_date(<<A:2/binary, "/", B:2/binary, "/", Year:4/binary>>) ->
+  [YearNum, ANum, BNum] = lists:map(fun bin_to_int/1, [Year,A,B]),
+  parse_date(YearNum, [ANum, BNum]);
+bin_to_date(_) ->
+  { error, invalid_bin }.
 
 parse_date(Year, [A|[B]]) ->
   case eligible_to_month([A|[B]]) of
