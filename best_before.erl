@@ -4,7 +4,7 @@
 s(S) when is_list(S) ->
   case bin_to_date(list_to_binary(S)) of
     { error, _ } ->
-      nok;
+      S ++ " is illegal";
     Date ->
       format_date(Date)
   end.
