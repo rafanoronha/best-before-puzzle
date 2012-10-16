@@ -34,16 +34,15 @@ parse_date([A, B, C]) ->
   end.
 
 get_month_and_day(L) when is_list(L) ->
-   case eligible_to_month(L) of
+  case eligible_to_month(L) of
     [] ->
-      { error, invalid_date };
+      [];
     [A, B] ->
-      [_Month, _Day] = lists:sort([A, B]);
+      lists:sort([A, B]);
     [A, B, C] ->
       [_Year, Month, Day] = lists:sort([A, B, C]),
       [Month, Day]
   end.
- 
 
 format_date({ Year, Month, Day }) ->
   integer_to_list(Year) ++ "/" ++ integer_to_list(Month) ++ "/" ++ integer_to_list(Day).
