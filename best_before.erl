@@ -9,11 +9,55 @@ s(S) when is_list(S) ->
       format_date(Date)
   end.
 
+bin_to_date(<<Year:4/binary, "/", A:2/binary, "/", B:2/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<Year:4/binary, "/", A:2/binary, "/", B:1/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<Year:4/binary, "/", A:1/binary, "/", B:1/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<Year:4/binary, "/", A:1/binary, "/", B:2/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<A:2/binary, "/", Year:4/binary, "/", B:2/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<A:2/binary, "/", Year:4/binary, "/", B:1/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<A:1/binary, "/", Year:4/binary, "/", B:1/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<A:1/binary, "/", Year:4/binary, "/", B:2/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
 bin_to_date(<<A:2/binary, "/", B:2/binary, "/", Year:4/binary>>) ->
-  [YearNum, ANum, BNum] = lists:map(fun bin_to_int/1, [Year, A, B]),
-  parse_date(YearNum, [ANum, BNum]);
-bin_to_date(_) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<A:2/binary, "/", B:1/binary, "/", Year:4/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<A:1/binary, "/", B:1/binary, "/", Year:4/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<A:1/binary, "/", B:2/binary, "/", Year:4/binary>>) ->
+  known_year_bin_to_date(Year, A, B);
+bin_to_date(<<A:2/binary, "/", B:2/binary, "/", C:2/binary>>) ->
+  unknown_year_bin_to_date(A, B, C);
+bin_to_date(<<A:2/binary, "/", B:2/binary, "/", C:1/binary>>) ->
+  unknown_year_bin_to_date(A, B, C);
+bin_to_date(<<A:2/binary, "/", B:1/binary, "/", C:1/binary>>) ->
+  unknown_year_bin_to_date(A, B, C);
+bin_to_date(<<A:2/binary, "/", B:1/binary, "/", C:2/binary>>) ->
+  unknown_year_bin_to_date(A, B, C);
+bin_to_date(<<A:1/binary, "/", B:2/binary, "/", C:2/binary>>) ->
+  unknown_year_bin_to_date(A, B, C);
+bin_to_date(<<A:1/binary, "/", B:2/binary, "/", C:1/binary>>) ->
+  unknown_year_bin_to_date(A, B, C);
+bin_to_date(<<A:1/binary, "/", B:1/binary, "/", C:1/binary>>) ->
+  unknown_year_bin_to_date(A, B, C);
+bin_to_date(<<A:1/binary, "/", B:1/binary, "/", C:2/binary>>) ->
+  unknown_year_bin_to_date(A, B, C);
+bin_to_date(Bin) when is_binary(Bin) ->
   { error, invalid_bin }.
+
+known_year_bin_to_date(Year, A, B) ->
+  [YearNum, ANum, BNum] = lists:map(fun bin_to_int/1, [Year, A, B]),
+  parse_date(YearNum, [ANum, BNum]).
+
+unknown_year_bin_to_date(A, B, C) ->
+  parse_date(lists:map(fun bin_to_int/1, [A, B, C])).
 
 parse_date(Year, [A, B]) ->
   MonthAndDay = get_month_and_day([A, B]),
