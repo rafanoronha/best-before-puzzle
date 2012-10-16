@@ -40,7 +40,8 @@ get_month_and_day(L) when is_list(L) ->
     [A, B] ->
       [_Month, _Day] = lists:sort([A, B]);
     [A, B, C] ->
-      [_Month, _Day] = lists:delete(hd(lists:sort([A, B, C])))
+      [_Year, Month, Day] = lists:sort([A, B, C]),
+      [Month, Day]
   end.
  
 
