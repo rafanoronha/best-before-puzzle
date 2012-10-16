@@ -16,11 +16,11 @@ bin_to_date(_) ->
   { error, invalid_bin }.
 
 parse_date(Year, [A, B]) ->
-  case get_month_and_day([A, B]) of
-    [] ->
+  MonthAndDay = get_month_and_day([A, B]),
+  case MonthAndDay of
+    { error, _ } ->
       { error, invalid_date };
-    [_H|_T] -> 
-      [Month, Day] = lists:sort([A, B]),
+    [Month, Day] -> 
       { Year, Month, Day }
   end.
 parse_date([A, B, C]) ->
