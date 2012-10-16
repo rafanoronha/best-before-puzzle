@@ -10,13 +10,13 @@ s(S) when is_list(S) ->
   end.
 
 bin_to_date(<<A:2/binary, "/", B:2/binary, "/", Year:4/binary>>) ->
-  [YearNum, ANum, BNum] = lists:map(fun bin_to_int/1, [Year,A,B]),
+  [YearNum, ANum, BNum] = lists:map(fun bin_to_int/1, [Year, A, B]),
   parse_date(YearNum, [ANum, BNum]);
 bin_to_date(_) ->
   { error, invalid_bin }.
 
-parse_date(Year, [A|[B]]) ->
-  case eligible_to_month([A|[B]]) of
+parse_date(Year, [A, B]) ->
+  case eligible_to_month([A, B]) of
     [] ->
       { error, invalid_date };
     [_H|_T] -> 
