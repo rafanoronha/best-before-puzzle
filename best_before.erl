@@ -24,7 +24,14 @@ parse_date(Year, [A, B]) ->
       { Year, Month, Day }
   end.
 parse_date([A, B, C]) ->
-  { error, invalid_date }.
+  MonthAndDay = get_month_and_day([A, B, C]),
+  case MonthAndDay of
+    { error, _ } ->
+      { error, invalid_date };
+    [Month, Day] -> 
+      [Year] = [A, B, C] -- [Month, Day],
+      { Year, Month, Day }
+  end.
 
 get_month_and_day(L) when is_list(L) ->
    case eligible_to_month(L) of
