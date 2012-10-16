@@ -18,7 +18,7 @@ bin_to_date(_) ->
 parse_date(Year, [A, B]) ->
   MonthAndDay = get_month_and_day([A, B]),
   case MonthAndDay of
-    { error, _ } ->
+    [] ->
       { error, invalid_date };
     [Month, Day] -> 
       { Year, Month, Day }
@@ -26,7 +26,7 @@ parse_date(Year, [A, B]) ->
 parse_date([A, B, C]) ->
   MonthAndDay = get_month_and_day([A, B, C]),
   case MonthAndDay of
-    { error, _ } ->
+    [] ->
       { error, invalid_date };
     [Month, Day] -> 
       [Year] = [A, B, C] -- [Month, Day],
