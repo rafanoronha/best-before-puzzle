@@ -16,15 +16,26 @@ bin_to_date(_) ->
   { error, invalid_bin }.
 
 parse_date(Year, [A, B]) ->
-  case eligible_to_month([A, B]) of
+  case get_month_and_day([A, B]) of
     [] ->
       { error, invalid_date };
     [_H|_T] -> 
       [Month, Day] = lists:sort([A, B]),
       { Year, Month, Day }
   end.
-parse_date([A|[B|[C]]]) ->
+parse_date([A, B, C]) ->
   { error, invalid_date }.
+
+get_month_and_day(L) when is_list(L) ->
+   case eligible_to_month(L) of
+    [] ->
+      { error, invalid_date };
+    [A, B] ->
+      [_Month, _Day] = lists:sort([A, B]);
+    [A, B, C] ->
+      [_Month, _Day] = lists:delete(hd(lists:sort([A, B, C])))
+  end.
+ 
 
 format_date({ Year, Month, Day }) ->
   integer_to_list(Year) ++ "/" ++ integer_to_list(Month) ++ "/" ++ integer_to_list(Day).
