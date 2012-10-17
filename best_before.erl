@@ -91,11 +91,10 @@ get_month_and_day(L) when is_list(L) ->
 format_date({ Year, Month, Day }) ->
   integer_to_list(Year) ++ "/" ++ integer_to_list(Month) ++ "/" ++ integer_to_list(Day).
 
-is_month(Number) ->
-  (12 >= Number) and (1 =< Number).
-
+eligible_to_month(Number) when is_integer(Number) ->
+  (12 >= Number) and (1 =< Number);
 eligible_to_month(L) when is_list(L) ->
-  lists:filter(fun is_month/1, L).
+  lists:filter(fun eligible_to_month/1, L).
 
 bin_to_int(Bin) ->
   { Int, [] } = string:to_integer(binary_to_list(Bin)),
