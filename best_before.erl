@@ -104,27 +104,6 @@ get_month_and_day_when_year_is_unknown([A, B, C], [A, B, C]) ->
   [_Y, M, D] = lists:sort([A, B, C]),
   [M, D].
 
-get_month_and_day(L) when is_list(L) ->
-  case eligible_to_month(L) of
-    [] ->
-      { error, month_not_found } ;
-    [A] ->
-      [A] ++ [hd(lists:reverse(lists:sort(L -- [A])))];
-    [A, B] ->
-      UnknownYear = 3 == length(L),
-      GetMonth = case UnknownYear of 
-        true ->
-         fun() -> hd(lists:reverse(lists:sort([A, B]))) end;
-        _ ->
-         fun() -> hd(lists:sort([A, B])) end
-      end,
-      Month = GetMonth(),    
-      [Month] ++ [hd(lists:reverse(lists:sort(L -- [Month])))];
-    [A, B, C] ->
-      [_Year, Month, Day] = lists:sort([A, B, C]),
-      [Month, Day]
-  end.
-
 date_tuple_from_known_year(Y, M, D) ->
   { Y, M, D }.
 
