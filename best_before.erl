@@ -60,22 +60,34 @@ unknown_year_bin_to_date(A, B, C) ->
   parse_date(lists:map(fun bin_to_int/1, [A, B, C])).
 
 parse_date(Year, [A, B]) ->
-  MonthAndDay = get_month_and_day([A, B]),
-  case MonthAndDay of
-    { error, _ } ->
-      { error, invalid_date };
-    [Month, Day] -> 
-      { Year, Month, Day }
-  end.
+  MonthAndDayArgs = [A, B],
+  GetYear = fun(_) -> Year end,
+  GetTuple = fun date_tuple_from_known_year/3,
+  do_parse_date(MonthAndDayArgs, GetYear, GetTuple).
 parse_date([A, B, C]) ->
-  MonthAndDay = get_month_and_day([A, B, C]),
+  MonthAndDayArgs = [A, B, C],
+  GetYear = fun([Month, Day]) ->
+    [Year] = [A, B, C] -- [Month, Day],
+    Year
+  end,
+  GetTuple = fun date_tuple_from_deducted_year/3,
+  do_parse_date(MonthAndDayArgs, GetYear, GetTuple).
+
+do_parse_date(MonthAndDayArgs, GetYear, GetTuple) ->
+  MonthAndDay = get_month_and_day(MonthAndDayArgs),
   case MonthAndDay of
     { error, _ } ->
       { error, invalid_date };
-    [Month, Day] -> 
-      [Year] = [A, B, C] -- [Month, Day],
-      { 2000 + Year, Month, Day }
+    [M, D] ->
+      Y = GetYear(MonthAndDay),
+      GetTuple(Y, M, D)
   end.
+
+date_tuple_from_known_year(Y, M, D) ->
+  { Y, M, D}.
+
+date_tuple_from_deducted_year(Y, M, D) ->
+  { 2000 + Y, M, D }.
 
 get_month_and_day(L) when is_list(L) ->
   case eligible_to_month(L) of
