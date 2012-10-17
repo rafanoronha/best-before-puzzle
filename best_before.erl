@@ -105,7 +105,7 @@ get_month_and_day(L) when is_list(L) ->
   end.
 
 date_tuple_from_known_year(Y, M, D) ->
-  { Y, M, D}.
+  { Y, M, D }.
 
 date_tuple_from_deducted_year(Y, M, D) ->
   { 2000 + Y, M, D }.
