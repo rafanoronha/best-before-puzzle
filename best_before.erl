@@ -62,7 +62,7 @@ unknown_year_bin_to_date(A, B, C) ->
 parse_date(Year, [A, B]) ->
   MonthAndDay = get_month_and_day([A, B]),
   case MonthAndDay of
-    [] ->
+    { error, _ } ->
       { error, invalid_date };
     [Month, Day] -> 
       { Year, Month, Day }
