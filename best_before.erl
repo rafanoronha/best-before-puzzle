@@ -70,7 +70,7 @@ parse_date(Year, [A, B]) ->
 parse_date([A, B, C]) ->
   MonthAndDay = get_month_and_day([A, B, C]),
   case MonthAndDay of
-    [] ->
+    { error, _ } ->
       { error, invalid_date };
     [Month, Day] -> 
       [Year] = [A, B, C] -- [Month, Day],
@@ -80,7 +80,7 @@ parse_date([A, B, C]) ->
 get_month_and_day(L) when is_list(L) ->
   case eligible_to_month(L) of
     [] ->
-      [];
+      { error, month_not_found } ;
     [A] ->
       [A] ++ [hd(lists:reverse(lists:sort(L -- [A])))];
     [A, B] ->
