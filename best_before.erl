@@ -74,7 +74,7 @@ parse_date([A, B, C]) ->
       { error, invalid_date };
     [Month, Day] -> 
       [Year] = [A, B, C] -- [Month, Day],
-      { Year, Month, Day }
+      { 2000 + Year, Month, Day }
   end.
 
 get_month_and_day(L) when is_list(L) ->
