@@ -61,27 +61,48 @@ unknown_year_bin_to_date(A, B, C) ->
 
 parse_date(Year, [A, B]) ->
   MonthAndDayArgs = [A, B],
+  GetMonthAndDay = fun get_month_and_day_when_year_is_known/2,
   GetYear = fun(_) -> Year end,
   GetTuple = fun date_tuple_from_known_year/3,
-  do_parse_date(MonthAndDayArgs, GetYear, GetTuple).
+  do_parse_date(MonthAndDayArgs, GetMonthAndDay, GetYear, GetTuple).
 parse_date([A, B, C]) ->
   MonthAndDayArgs = [A, B, C],
+  GetMonthAndDay = fun get_month_and_day_when_year_is_unknown/2,
   GetYear = fun([Month, Day]) ->
     [Year] = [A, B, C] -- [Month, Day],
     Year
   end,
   GetTuple = fun date_tuple_from_deducted_year/3,
-  do_parse_date(MonthAndDayArgs, GetYear, GetTuple).
+  do_parse_date(MonthAndDayArgs, GetMonthAndDay, GetYear, GetTuple).
 
-do_parse_date(MonthAndDayArgs, GetYear, GetTuple) ->
-  MonthAndDay = get_month_and_day(MonthAndDayArgs),
-  case MonthAndDay of
-    { error, _ } ->
-      { error, invalid_date };
-    [M, D] ->
-      Y = GetYear(MonthAndDay),
+do_parse_date(MonthAndDayArgs, GetMonthAndDay, GetYear, GetTuple) ->
+  EligibleToMonth = eligible_to_month(MonthAndDayArgs),
+  case EligibleToMonth of
+    [] ->
+      { error, month_not_found } ;
+    _List ->
+      [M, D] = GetMonthAndDay(MonthAndDayArgs, EligibleToMonth),
+      Y = GetYear([M, D]),
       GetTuple(Y, M, D)
   end.
+
+get_month_and_day_when_year_is_known([A, B], [M]) ->
+  [D] = [A, B] -- [M],
+  [M, D];
+get_month_and_day_when_year_is_known([A, B], [A, B]) ->
+  lists:sort([A, B]).
+
+get_month_and_day_when_year_is_unknown([A, B, C], [M]) ->
+  [Z, X] = [A, B, C] -- [M],
+  [_Y, D] = lists:sort([Z, X]),
+  [M, D];
+get_month_and_day_when_year_is_unknown([A, B, C], [Z, X]) ->
+  [Y, M] = lists:sort([Z, X]),
+  [D] = [A, B, C] -- [Y, M],
+  [M, D];
+get_month_and_day_when_year_is_unknown([A, B, C], [A, B, C]) ->
+  [_Y, M, D] = lists:sort([A, B, C]),
+  [M, D].
 
 get_month_and_day(L) when is_list(L) ->
   case eligible_to_month(L) of
