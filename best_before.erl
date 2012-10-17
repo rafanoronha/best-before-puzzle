@@ -84,10 +84,10 @@ get_month_and_day(L) when is_list(L) ->
     [A] ->
       [A] ++ [hd(lists:reverse(lists:sort(L -- [A])))];
     [A, B] ->
-      Unknown = 3 == length(L),
-      GetMonth = case Unknown of 
+      UnknownYear = 3 == length(L),
+      GetMonth = case UnknownYear of 
         true ->
-         fun() -> hd(lists:sort([A, B])) end;
+         fun() -> hd(lists:reverse(lists:sort([A, B]))) end;
         _ ->
          fun() -> hd(lists:sort([A, B])) end
       end,
