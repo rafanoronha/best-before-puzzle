@@ -83,12 +83,6 @@ do_parse_date(MonthAndDayArgs, GetYear, GetTuple) ->
       GetTuple(Y, M, D)
   end.
 
-date_tuple_from_known_year(Y, M, D) ->
-  { Y, M, D}.
-
-date_tuple_from_deducted_year(Y, M, D) ->
-  { 2000 + Y, M, D }.
-
 get_month_and_day(L) when is_list(L) ->
   case eligible_to_month(L) of
     [] ->
@@ -109,6 +103,12 @@ get_month_and_day(L) when is_list(L) ->
       [_Year, Month, Day] = lists:sort([A, B, C]),
       [Month, Day]
   end.
+
+date_tuple_from_known_year(Y, M, D) ->
+  { Y, M, D}.
+
+date_tuple_from_deducted_year(Y, M, D) ->
+  { 2000 + Y, M, D }.
 
 format_date({ Year, Month, Day }) ->
   integer_to_list(Year) ++ "/" ++ integer_to_list(Month) ++ "/" ++ integer_to_list(Day).
